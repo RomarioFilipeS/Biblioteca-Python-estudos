@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biblioteca — Catálogo de Acervo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --felt:#1f3a2e;
+    --felt-dark:#142922;
+    --felt-light:#2c4f3d;
+    --card:#f3ead3;
+    --card-edge:#d8c9a3;
+    --ink:#2b2620;
+    --ink-soft:#6b6151;
+    --stamp-red:#9c2b20;
+    --stamp-green:#3f7a4d;
+    --brass:#b8923b;
+    --brass-light:#d9bb72;
+  }
+
+  *{ box-sizing:border-box; }
+
+  body{
+    margin:0;
+    background-color:var(--felt);
+    background-image:repeating-linear-gradient(135deg, rgba(255,255,255,.015) 0px, rgba(255,255,255,.015) 2px, transparent 2px, transparent 6px);
+    color:var(--card);
+    -webkit-font-smoothing:antialiased;
+  }
+
+  header.hero{
+    text-align:center;
+    padding:56px 20px 36px;
+    background:linear-gradient(180deg, var(--felt-dark), var(--felt));
+    border-bottom:6px solid var(--brass);
+    position:relative;
+  }
+  .label-plate{
+    display:inline-block;
+    background:var(--card);
+    border:3px solid var(--brass);
+    padding:18px 38px;
+    transform:rotate(-1deg);
+    box-shadow:0 8px 20px rgba(0,0,0,.35);
+    position:relative;
+  }
+  .label-plate::before, .label-plate::after{
+    content:'';
+    position:absolute;
+    width:8px; height:8px;
+    border-radius:50%;
+    background:var(--brass);
+    top:7px;
+  }
+  .label-plate::before{ left:7px; }
+  .label-plate::after{ right:7px; }
+  h1{
+    font-family:'Special Elite', monospace;
+    font-size:2.1rem;
+    letter-spacing:3px;
+    color:var(--ink);
+    margin:0;
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:.72rem;
+    letter-spacing:4px;
+    text-transform:uppercase;
+    color:var(--brass-light);
+    margin-top:16px;
+  }
+  .tagline{
+    font-family:'Lora', serif;
+    font-style:italic;
+    font-size:.95rem;
+    color:rgba(243,234,211,.65);
+    margin-top:6px;
+  }
+
+  main{
+    max-width:1080px;
+    margin:0 auto;
+    padding:36px 20px 60px;
+  }
+
+  .stats{
+    display:flex;
+    gap:16px;
+    flex-wrap:wrap;
+    justify-content:center;
+    margin-bottom:34px;
+  }
+  .stat{
+    background:var(--felt-light);
+    border:1px solid rgba(184,146,59,.4);
+    border-radius:6px;
+    padding:14px 28px;
+    text-align:center;
+    min-width:110px;
+  }
+  .stat .num{
+    font-family:'JetBrains Mono', monospace;
+    font-size:1.8rem;
+    font-weight:700;
+    color:var(--brass-light);
+  }
+  .stat .label{
+    font-family:'JetBrains Mono', monospace;
+    font-size:.65rem;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:rgba(243,234,211,.6);
+    margin-top:4px;
+  }
+
+  .toolbar{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:22px;
+  }
+  .search-box{ flex:1; min-width:220px; }
+  .search-box input{
+    width:100%;
+    padding:11px 14px;
+    border-radius:6px;
+    border:1px solid rgba(184,146,59,.4);
+    background:var(--felt-light);
+    color:var(--card);
+    font-family:'Lora', serif;
+    font-size:.95rem;
+  }
+  .search-box input::placeholder{ color:rgba(243,234,211,.45); }
+  .search-box input:focus-visible{ outline:2px solid var(--brass-light); outline-offset:2px; }
+
+  .btn-toggle{
+    background:var(--brass);
+    color:var(--felt-dark);
+    border:none;
+    font-family:'JetBrains Mono', monospace;
+    font-weight:700;
+    letter-spacing:1px;
+    padding:11px 20px;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:.82rem;
+    white-space:nowrap;
+  }
+  .btn-toggle:hover{ background:var(--brass-light); }
+  .btn-toggle:focus-visible{ outline:2px solid var(--card); outline-offset:2px; }
+
+  .form-card{
+    background:var(--card);
+    background-image:repeating-linear-gradient(transparent 0px, transparent 27px, rgba(43,38,32,.10) 28px);
+    border-radius:6px;
+    padding:24px 26px;
+    margin-bottom:30px;
+    box-shadow:0 10px 24px rgba(0,0,0,.3);
+  }
+  .form-card h2{
+    font-family:'Special Elite', monospace;
+    font-size:1.02rem;
+    letter-spacing:1px;
+    color:var(--ink);
+    margin:0 0 18px;
+  }
+  .field{ margin-bottom:18px; }
+  .field label{
+    display:block;
+    font-family:'JetBrains Mono', monospace;
+    font-size:.63rem;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-bottom:4px;
+  }
+  .field input{
+    width:100%;
+    border:none;
+    border-bottom:2px solid var(--card-edge);
+    background:transparent;
+    font-family:'Lora', serif;
+    font-size:1.05rem;
+    padding:5px 2px;
+    color:var(--ink);
+  }
+  .field input:focus-visible{ outline:none; border-bottom-color:var(--stamp-red); }
+  .form-actions{ display:flex; gap:10px; flex-wrap:wrap; }
+  .btn-primary{
+    background:var(--stamp-red);
+    color:#fff;
+    border:none;
+    padding:11px 22px;
+    border-radius:5px;
+    font-family:'JetBrains Mono', monospace;
+    font-weight:700;
+    letter-spacing:1px;
+    font-size:.8rem;
+    cursor:pointer;
+  }
+  .btn-primary:hover{ background:#b53627; }
+  .btn-primary:focus-visible{ outline:2px solid var(--ink); outline-offset:2px; }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(230px, 1fr));
+    gap:24px 22px;
+  }
+
+  .book-card{
+    position:relative;
+    background:var(--card);
+    border-radius:4px;
+    padding:22px 18px 18px;
+    margin-top:16px;
+    box-shadow:0 6px 16px rgba(0,0,0,.22);
+  }
+  .book-card .tab{
+    position:absolute;
+    top:-14px; left:16px;
+    width:32px; height:20px;
+    background:var(--brass);
+    border-radius:3px 3px 0 0;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono', monospace;
+    font-weight:700;
+    font-size:.78rem;
+    color:var(--felt-dark);
+    box-shadow:0 -2px 4px rgba(0,0,0,.2);
+  }
+  .book-card h3{
+    font-family:'Lora', serif;
+    font-weight:600;
+    font-size:1.06rem;
+    color:var(--ink);
+    margin:8px 0 4px;
+  }
+  .book-card .autor{
+    font-family:'Lora', serif;
+    font-style:italic;
+    font-size:.86rem;
+    color:var(--ink-soft);
+    margin-bottom:14px;
+  }
+  .status-line{
+    display:flex; align-items:center; gap:6px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:.66rem; letter-spacing:1px; text-transform:uppercase;
+    color:var(--stamp-green);
+    margin-bottom:14px;
+    min-height:14px;
+  }
+  .status-line .dot{ width:7px; height:7px; border-radius:50%; background:var(--stamp-green); }
+
+  .actions{ display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  .btn-action{
+    background:var(--felt);
+    color:var(--card);
+    border:none;
+    padding:8px 14px;
+    border-radius:5px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:.7rem; letter-spacing:1px;
+    cursor:pointer;
+  }
+  .btn-action.devolver{ background:var(--stamp-green); }
+  .btn-action:focus-visible{ outline:2px solid var(--brass); outline-offset:2px; }
+  .btn-remove{
+    background:none; border:none;
+    color:var(--ink-soft);
+    font-family:'JetBrains Mono', monospace;
+    font-size:.66rem;
+    text-decoration:underline;
+    cursor:pointer;
+    padding:4px;
+  }
+  .btn-remove:hover{ color:var(--stamp-red); }
+
+  .stamp{
+    position:absolute;
+    top:48%; left:50%;
+    transform:translate(-50%,-50%) rotate(-12deg) scale(1);
+    border:3px solid var(--stamp-red);
+    color:var(--stamp-red);
+    border-radius:4px;
+    padding:5px 12px;
+    text-align:center;
+    opacity:.88;
+    mix-blend-mode:multiply;
+    pointer-events:none;
+    white-space:nowrap;
+  }
+  .stamp .word{
+    display:block;
+    font-family:'Special Elite', monospace;
+    font-size:.95rem;
+    letter-spacing:2px;
+  }
+  .stamp .date{
+    display:block;
+    font-family:'JetBrains Mono', monospace;
+    font-size:.55rem;
+    letter-spacing:1px;
+    margin-top:2px;
+  }
+  @keyframes stampIn{
+    0%{ transform:translate(-50%,-50%) rotate(-12deg) scale(2.4); opacity:0; }
+    55%{ transform:translate(-50%,-50%) rotate(-12deg) scale(.85); opacity:1; }
+    100%{ transform:translate(-50%,-50%) rotate(-12deg) scale(1); opacity:.88; }
+  }
+  .stamp.stamp-in{ animation:stampIn .45s cubic-bezier(.36,1.7,.4,1) both; }
+  @keyframes stampLift{
+    to{ transform:translate(-50%,-50%) rotate(-12deg) scale(1.5); opacity:0; }
+  }
+  .stamp.lift{ animation:stampLift .32s ease forwards; }
+
+  @media (prefers-reduced-motion: reduce){
+    .stamp.stamp-in, .stamp.lift{ animation:none !important; }
+  }
+
+  .empty-state{
+    text-align:center;
+    padding:50px 20px;
+    color:rgba(243,234,211,.6);
+    font-family:'Lora', serif;
+    font-style:italic;
+  }
+
+  .erro-aviso{
+    text-align:center;
+    padding:14px;
+    margin-bottom:20px;
+    background:rgba(156,43,32,.25);
+    border:1px solid var(--stamp-red);
+    border-radius:6px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:.78rem;
+    display:none;
+  }
+
+  footer{
+    text-align:center;
+    padding:24px;
+    border-top:1px solid rgba(184,146,59,.25);
+    color:rgba(243,234,211,.45);
+    font-family:'JetBrains Mono', monospace;
+    font-size:.68rem;
+    letter-spacing:1px;
+  }
+
+  @media (max-width:480px){
+    h1{ font-size:1.6rem; }
+    .label-plate{ padding:14px 22px; }
+    .stat{ min-width:88px; padding:10px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="label-plate">
+    <h1>BIBLIOTECA</h1>
+  </div>
+  <div class="eyebrow">Catálogo de acervo</div>
+  <div class="tagline">conectado ao servidor Python</div>
+</header>
+
+<main>
+  <div class="erro-aviso" id="erroAviso">Não foi possível falar com o servidor. Confira se o app.py está rodando.</div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="toolbar">
+    <div class="search-box">
+      <input type="text" id="busca" placeholder="Buscar por título ou autor" oninput="onBusca(this.value)">
+    </div>
+    <button class="btn-toggle" id="btnToggleForm" onclick="toggleForm()">+ Novo livro</button>
+  </div>
+
+  <form class="form-card" id="formCard" style="display:none" onsubmit="addBook(event)">
+    <h2>Nova ficha de catálogo</h2>
+    <div class="field">
+      <label for="titulo">Título</label>
+      <input type="text" id="titulo" required>
+    </div>
+    <div class="field">
+      <label for="autor">Autor</label>
+      <input type="text" id="autor" required>
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn-primary">Adicionar ao acervo</button>
+    </div>
+  </form>
+
+  <div class="grid" id="grid"></div>
+</main>
+
+<footer>Biblioteca — frontend + backend Flask</footer>
+
+<script>
+  const API = "/api/livros";
+
+  let livros = [];
+  let filtroAtual = "";
+  let justStamped = null; // índice que acabou de ser emprestado (pra animar só ele)
+
+  function escapeHtml(str){
+    return str
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function mostrarErro(mostrar){
+    document.getElementById('erroAviso').style.display = mostrar ? 'block' : 'none';
+  }
+
+  function dataHoje(){
+    return new Date().toLocaleDateString('pt-BR');
+  }
+
+  // ---------- chamadas pro backend ----------
+
+  async function carregarLivros(){
+    try{
+      const resp = await fetch(API);
+      livros = await resp.json();
+      mostrarErro(false);
+    }catch(e){
+      mostrarErro(true);
+    }
+    renderBooks();
+  }
+
+  async function addBook(e){
+    e.preventDefault();
+    const titulo = document.getElementById('titulo').value.trim();
+    const autor = document.getElementById('autor').value.trim();
+    if (!titulo || !autor) return;
+
+    try{
+      const resp = await fetch(API, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ titulo, autor })
+      });
+      livros = await resp.json();
+      mostrarErro(false);
+    }catch(e){
+      mostrarErro(true);
+      return;
+    }
+
+    document.getElementById('titulo').value = '';
+    document.getElementById('autor').value = '';
+    toggleForm();
+    renderBooks();
+  }
+
+  async function emprestar(idx){
+    justStamped = idx;
+    try{
+      const resp = await fetch(`${API}/${idx}/emprestar`, { method: "POST" });
+      livros = await resp.json();
+      mostrarErro(false);
+    }catch(e){
+      mostrarErro(true);
+    }
+    renderBooks();
+  }
+
+  async function devolver(idx){
+    const card = document.querySelector(`.book-card[data-index="${idx}"]`);
+    const stamp = card ? card.querySelector('.stamp') : null;
+
+    const efetivarDevolucao = async () => {
+      try{
+        const resp = await fetch(`${API}/${idx}/devolver`, { method: "POST" });
+        livros = await resp.json();
+        mostrarErro(false);
+      }catch(e){
+        mostrarErro(true);
+      }
+      renderBooks();
+    };
+
+    if (stamp){
+      stamp.classList.add('lift');
+      setTimeout(efetivarDevolucao, 320);
+    } else {
+      efetivarDevolucao();
+    }
+  }
+
+  async function removerLivro(idx){
+    const livro = livros[idx];
+    if (!confirm(`Remover "${livro.titulo}" do acervo?`)) return;
+
+    try{
+      const resp = await fetch(`${API}/${idx}`, { method: "DELETE" });
+      livros = await resp.json();
+      mostrarErro(false);
+    }catch(e){
+      mostrarErro(true);
+    }
+    renderBooks();
+  }
+
+  function onBusca(valor){
+    filtroAtual = valor;
+    renderBooks();
+  }
+
+  // ---------- renderização (igual à versão anterior) ----------
+
+  function renderStats(){
+    const total = livros.length;
+    const disponiveis = livros.filter(l => l.disponivel).length;
+    const emprestados = total - disponiveis;
+
+    document.getElementById('stats').innerHTML = `
+      <div class="stat"><div class="num">${total}</div><div class="label">Total</div></div>
+      <div class="stat"><div class="num">${disponiveis}</div><div class="label">Disponíveis</div></div>
+      <div class="stat"><div class="num">${emprestados}</div><div class="label">Emprestados</div></div>
+    `;
+  }
+
+  function renderBooks(){
+    const grid = document.getElementById('grid');
+    const termo = filtroAtual.trim().toLowerCase();
+
+    const visiveis = livros
+      .map((livro, idx) => ({ ...livro, idx }))
+      .filter(l => !termo || l.titulo.toLowerCase().includes(termo) || l.autor.toLowerCase().includes(termo));
+
+    if (livros.length === 0){
+      grid.innerHTML = `<div class="empty-state">O acervo está vazio — cadastre o primeiro livro.</div>`;
+      renderStats();
+      return;
+    }
+
+    if (visiveis.length === 0){
+      grid.innerHTML = `<div class="empty-state">Nenhum livro encontrado para "${escapeHtml(filtroAtual)}".</div>`;
+      renderStats();
+      return;
+    }
+
+    grid.innerHTML = visiveis.map(l => {
+      const tabLetra = l.titulo.trim().charAt(0).toUpperCase() || "?";
+      const stampClass = l.idx === justStamped ? 'stamp stamp-in' : 'stamp';
+
+      const stampHtml = !l.disponivel ? `
+        <div class="${stampClass}">
+          <span class="word">EMPRESTADO</span>
+          <span class="date">${dataHoje()}</span>
+        </div>` : '';
+
+      const statusHtml = l.disponivel ? `
+        <div class="status-line"><span class="dot"></span> Disponível</div>` : `
+        <div class="status-line"></div>`;
+
+      const acaoBtn = l.disponivel
+        ? `<button class="btn-action" onclick="emprestar(${l.idx})">Emprestar</button>`
+        : `<button class="btn-action devolver" onclick="devolver(${l.idx})">Devolver</button>`;
+
+      return `
+        <div class="book-card" data-index="${l.idx}">
+          <div class="tab">${escapeHtml(tabLetra)}</div>
+          <h3>${escapeHtml(l.titulo)}</h3>
+          <div class="autor">${escapeHtml(l.autor)}</div>
+          ${statusHtml}
+          ${stampHtml}
+          <div class="actions">
+            ${acaoBtn}
+            <button class="btn-remove" onclick="removerLivro(${l.idx})">remover</button>
+          </div>
+        </div>`;
+    }).join('');
+
+    justStamped = null;
+    renderStats();
+  }
+
+  function toggleForm(){
+    const form = document.getElementById('formCard');
+    const btn = document.getElementById('btnToggleForm');
+    const abrir = form.style.display === 'none';
+    form.style.display = abrir ? 'block' : 'none';
+    btn.textContent = abrir ? 'Cancelar' : '+ Novo livro';
+    if (abrir) document.getElementById('titulo').focus();
+  }
+
+  carregarLivros();
+</script>
+
+</body>
+</html>

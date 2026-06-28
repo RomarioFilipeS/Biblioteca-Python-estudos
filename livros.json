@@ -1,0 +1,12 @@
+[
+  {
+    "titulo": "Estruturas de Dados",
+    "autor": "Carlos Mendes",
+    "disponivel": false
+  },
+  {
+    "titulo": "Algoritmos na Prática",
+    "autor": "Beatriz Lima",
+    "disponivel": true
+  }
+]
